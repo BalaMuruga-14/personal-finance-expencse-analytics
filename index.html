@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Personal Finance & Expense Analytics</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- LOGIN PROTECTION -->
+
+<script>
+
+if (localStorage.getItem("loggedIn") !== "true") {
+
+    window.location.href = "login.html";
+
+}
+
+</script>
+
+
+<!-- HEADER -->
+
+<header class="top-header">
+
+    <h1>💰 Personal Finance & Expense Analytics</h1>
+
+    <p>
+        Manage your finances and understand your spending habits
+    </p>
+
+</header>
+
+
+<!-- NAVIGATION -->
+
+<nav class="navbar">
+
+    <a href="#dashboard">🏠 Dashboard</a>
+
+    <a href="#addTransaction">
+        ➕ Add Transaction
+    </a>
+
+    <a href="#transactions">
+        📋 Transactions
+    </a>
+
+    <a href="#budgetSection">
+        💵 Budget & Savings
+    </a>
+
+    <a href="#analytics">
+        📊 Analytics
+    </a>
+
+    <span id="userDisplay">
+        👤 admin
+    </span>
+
+    <button
+        onclick="logout()"
+        class="logout-btn"
+    >
+        🚪 Logout
+    </button>
+
+</nav>
+
+
+<main>
+
+
+<!-- DASHBOARD -->
+
+<section id="dashboard">
+
+    <h2>📊 Financial Dashboard</h2>
+
+    <div class="cards">
+
+        <div class="card income-card">
+
+            <h3>💰 Total Income</h3>
+
+            <p id="totalIncome">₹0</p>
+
+        </div>
+
+
+        <div class="card expense-card">
+
+            <h3>💸 Total Expenses</h3>
+
+            <p id="totalExpense">₹0</p>
+
+        </div>
+
+
+        <div class="card balance-card">
+
+            <h3>💵 Current Balance</h3>
+
+            <p id="balance">₹0</p>
+
+        </div>
+
+
+        <div class="card transaction-card">
+
+            <h3>📋 Transactions</h3>
+
+            <p id="transactionCount">0</p>
+
+        </div>
+
+
+        <div class="card savings-card">
+
+            <h3>💎 Total Savings</h3>
+
+            <p id="dashboardSavings">₹0</p>
+
+        </div>
+
+
+        <div class="card budget-card">
+
+            <h3>🎯 Monthly Budget</h3>
+
+            <p id="dashboardBudget">₹0</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ADD TRANSACTION -->
+
+<section
+    class="form-section"
+    id="addTransaction"
+>
+
+    <h2>➕ Add New Transaction</h2>
+
+    <form id="transactionForm">
+
+        <div>
+
+            <label>Description</label>
+
+            <input
+                type="text"
+                id="description"
+                placeholder="Example: Grocery Shopping"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>Amount</label>
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Enter amount"
+                min="1"
+                required
+            >
+
+        </div>
+
+
+        <div>
+
+            <label>Transaction Type</label>
+
+            <select id="type" required>
+
+                <option value="">
+                    Select Type
+                </option>
+
+                <option value="income">
+                    Income
+                </option>
+
+                <option value="expense">
+                    Expense
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>Category</label>
+
+            <select id="category" required>
+
+                <option value="">
+                    Select Category
+                </option>
+
+                <option value="Salary">Salary</option>
+
+                <option value="Food">Food</option>
+
+                <option value="Travel">Travel</option>
+
+                <option value="Shopping">Shopping</option>
+
+                <option value="Education">Education</option>
+
+                <option value="Bills">Bills</option>
+
+                <option value="Entertainment">
+                    Entertainment
+                </option>
+
+                <option value="Medical">
+                    Medical
+                </option>
+
+                <option value="Other">Other</option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>Date</label>
+
+            <input
+                type="date"
+                id="date"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-button">
+
+            <button type="submit">
+                ➕ Add Transaction
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- TRANSACTION HISTORY -->
+
+<section
+    class="transactions"
+    id="transactions"
+>
+
+    <h2>📋 Transaction History</h2>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="🔎 Search by description, category or type..."
+    >
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Description</th>
+
+                    <th>Amount</th>
+
+                    <th>Type</th>
+
+                    <th>Category</th>
+
+                    <th>Date</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="transactionTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="data-actions">
+
+        <button
+            onclick="exportCSV()"
+            class="export-btn"
+        >
+            📤 Export CSV
+        </button>
+
+
+        <button
+            onclick="clearAllData()"
+            class="clear-btn"
+        >
+            🧹 Clear All Data
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- BUDGET -->
+
+<section
+    class="form-section"
+    id="budgetSection"
+>
+
+    <h2>💵 Budget & Savings</h2>
+
+
+    <div class="budget-box">
+
+        <input
+            type="number"
+            id="budget"
+            placeholder="Enter monthly budget"
+            min="0"
+        >
+
+        <button onclick="saveBudget()">
+            💾 Save Budget
+        </button>
+
+    </div>
+
+
+    <div id="budgetWarning"
+         class="budget-warning">
+    </div>
+
+
+    <div class="cards budget-cards">
+
+        <div class="card">
+
+            <h3>🎯 Monthly Budget</h3>
+
+            <p id="budgetAmount">₹0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💸 Budget Used</h3>
+
+            <p id="budgetUsed">₹0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💵 Remaining Budget</h3>
+
+            <p id="remainingBudget">₹0</p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💎 Total Savings</h3>
+
+            <p id="totalSavings">₹0</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ANALYTICS -->
+
+<section
+    class="analytics"
+    id="analytics"
+>
+
+    <h2>📊 Expense Analytics</h2>
+
+
+    <div class="analytics-summary">
+
+        <div>
+
+            <strong>
+                Highest Spending Category
+            </strong>
+
+            <span id="highestCategory">
+                -
+            </span>
+
+        </div>
+
+
+        <div>
+
+            <strong>
+                Total Expenses
+            </strong>
+
+            <span id="analyticsExpense">
+                ₹0
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="chart-container">
+
+        <h3>
+            🥧 Expense by Category
+        </h3>
+
+        <canvas id="categoryChart"></canvas>
+
+    </div>
+
+
+    <div class="chart-container">
+
+        <h3>
+            📊 Monthly Expense Analysis
+        </h3>
+
+        <canvas id="monthlyChart"></canvas>
+
+    </div>
+
+
+    <div class="chart-container">
+
+        <h3>
+            ⚖️ Income vs Expense
+        </h3>
+
+        <canvas id="incomeExpenseChart"></canvas>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 Personal Finance & Expense Analytics System
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
